@@ -67,10 +67,6 @@ for single_date in daterange(start_date, end_date):
         h_time_list.append(i['time'])
         h_date_list.append(date_new)
     heartdf = pd.DataFrame({'Heart Rate':h_val_list,'Time':h_time_list,'Date':h_date_list})
-    # heartdf['Time'] = pd.to_datetime(heartdf['Time'])
-    # heartdf = heartdf.set_index('Time')
-    # heartdf = heartdf.resample('5T').mean()
-    # heartdf = heartdf.reset_index()
 
     fit_statsHR = auth2_client.intraday_time_series('activities/steps', base_date=date_new, detail_level='1min')
     for i in fit_statsHR['activities-steps-intraday']['dataset']:
@@ -78,18 +74,6 @@ for single_date in daterange(start_date, end_date):
         time_list.append(i['time'])
         date_list.append(date_new)
     stepsdf = pd.DataFrame({'Time':time_list,'Date':date_list,'Step Count':val_list})
-    # stepsdf['Time'] = pd.to_datetime(stepsdf['Time'])
-    # stepsdf = stepsdf.set_index('Time')
-    # stepsdf = stepsdf.resample('5T').sum()
-    # stepsdf = stepsdf.reset_index()
-    # date_list=[]
-    # time_list=[]
-    # for x in stepsdf['Time']:
-    #     d=datetime.datetime.strptime(str(x),"%Y-%m-%d  %H:%M:%S")
-    #     date_list.append(d.date())
-    #     time_list.append(d.time())
-    # stepsdf['Time_data'] = time_list
-    # stepsdf['Date_data'] = date_list
 
     fitbit_stats3 = auth2_client.sleep(date=date_new)
     for i in fitbit_stats3['sleep'][0]['minuteData']:
@@ -97,21 +81,7 @@ for single_date in daterange(start_date, end_date):
         sval_list.append(i['value'])
         sdate_list.append(date_new)
     sleepdf = pd.DataFrame({'Sleep State':sval_list,'Time':stime_list,'Date':sdate_list})
-    # # """Sleep data on the night of ...."""
-    # sleepdf['Time'] = pd.to_datetime(sleepdf['Time'])
-    # sleepdf['Sleep State'] = pd.to_numeric(sleepdf['Sleep State'])
-    # sleepdf = sleepdf.set_index('Time')
-    # sleepdf = sleepdf.resample('5T').sum()
-    # sleepdf = sleepdf.reset_index()
-    # for x in range(0,len(sleepdf['Sleep State'])):
-    #     if(sleepdf['Sleep State'][x]>=5):
-    #         sleepdf['Sleep State'][x]=1
-    #     # elif(sleepdf['Sleep State'][x]==0):
-    #     #     sleepdf['Sleep State'][x]=0
-    #     # elif(sleepdf['Sleep State'][x]>-5 and sleepdf['Sleep State'][x]<=0):
-    #     #     sleepdf['Sleep State'][x]=0
-    #     else:
-    #         sleepdf['Sleep State'][x]=0
+
 new_datetime_heart = []
 for i in range(0,len(heartdf['Date'])):
     new_datetime_heart.append(datetime.datetime.strptime(heartdf['Date'][i]+" "+heartdf['Time'][i], '%Y-%m-%d %H:%M:%S'))
@@ -151,10 +121,6 @@ sleepdf = sleepdf.reset_index()
 for x in range(0,len(sleepdf['Sleep State'])):
     if(sleepdf['Sleep State'][x]>=5):
         sleepdf['Sleep State'][x]=1
-    # elif(sleepdf['Sleep State'][x]==0):
-    #     sleepdf['Sleep State'][x]=0
-    # elif(sleepdf['Sleep State'][x]>-5 and sleepdf['Sleep State'][x]<=0):
-    #     sleepdf['Sleep State'][x]=0
     else:
         sleepdf['Sleep State'][x]=0
 
@@ -170,17 +136,6 @@ data['Time_data'].fillna('no inputs yet',inplace=True)
 data['Date_data'].fillna('no inputs yet',inplace=True)
 data_new = data[data['Time_data']!='no inputs yet']
 # print(data_new)
-
-
-
-# new_data=pd.concat([data.set_index('Time'),sleepdf.set_index('Time')],axis=1)
-# new_data['Sleep State'].fillna(1,inplace=True)
-# print(new_data)
-# sleepdf.to_csv('/Users/shsu/Downloads/python-fitbit-master/Sleep/sleep' + \
-#               today+'.csv', \
-#               columns = ['Time','State','Interpreted'],header=True,
-#               index = False)
-
 
 data.to_csv(path_or_buf='/Users/hp/Desktop/'+'fitbit_data'+CLIENT_ID+'.csv',columns=['Date_data','Time_data','Heart Rate','Step Count','Sleep State'], header=True, index = False)
 print('The fitbit_data'+CLIENT_ID+'.csv file has been downloaded on your desktop')
